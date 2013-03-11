@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.12'
 gem 'bootstrap-sass', '2.1'
+gem 'bcrypt-ruby', '3.0.1'
 
 group :development, :test do
   gem 'sqlite3', '1.3.5'
@@ -20,6 +21,10 @@ group :assets do
 end
 
 gem 'jquery-rails', '2.0.2'
+
+group :development do
+  gem 'annotate', '2.5.0'
+end
 
 # Test gems on Macintosh OS X
 group :test do
