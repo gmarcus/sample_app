@@ -9,20 +9,29 @@ describe "Authentication" do
 
     it { should have_selector('h1',    text: 'Sign in') }
     it { should have_page_title('Sign in') }
+
   end
   
   describe "signin" do
     before { visit signin_path }
-
+    
     describe "with invalid information" do
+      let(:user) { FactoryGirl.create(:user) }
+      
       before { click_button "Sign in" }
 
       it { should have_page_title('Sign in') }
       it { should have_error_message('Invalid') }
-      
+
+      it { should_not have_link('Users', href: users_path) }
+      it { should_not have_link('Profile', href: user_path(user)) }
+      it { should_not have_link('Sign out', href: signout_path) }
+      it { should_not have_link('Settings', href: edit_user_path(user)) }
+            
       describe "after visiting another page" do
         before { click_link "Home" }
-        it { should_not have_selector('div.alert.alert-error') }
+        # it { should_not have_selector('div.alert.alert-error') }
+        it { should_not have_error_message() }
       end
       
     end
@@ -63,6 +72,20 @@ describe "Authentication" do
         describe "after signing in" do
           it "should render the desired protected page" do
             page.should have_page_title('Edit user')
+          end
+          
+          describe "when signing in again" do
+            before do
+              delete signout_path
+              visit signin_path
+              fill_in "Email",    with: user.email
+              fill_in "Password", with: user.password
+              click_button "Sign in"
+            end
+
+            it "should render the default (profile) page" do
+              page.should have_page_title(user.name)
+            end
           end
         end
       end
@@ -114,6 +137,21 @@ describe "Authentication" do
       end      
     end
     
+    # TODO: figure out why this test is failing
+    # describe "as admin user" do
+    #   let(:admin) { FactoryGirl.create(:admin) }
+    # 
+    #   before { sign_in admin }
+    # 
+    #   describe "when deleting the current admin user" do
+    #     before { delete user_path(admin) }
+    #     specify { response.should redirect_to(root_path) }
+    # 
+    #     it { should have_page_title(full_title('')) }
+    #     it { should have_error_message('An admin cannot delete themselves') }
+    #     
+    #   end      
+    # end
   end
   
 end

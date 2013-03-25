@@ -30,6 +30,8 @@ describe User do
   it { should respond_to(:remember_token) }  
   it { should respond_to(:authenticate) }
   
+  it { should_not be_accessible(:admin) }
+  
   it { should be_valid }
   
   it { should respond_to(:admin) }
